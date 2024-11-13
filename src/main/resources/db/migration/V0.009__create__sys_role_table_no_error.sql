@@ -1,6 +1,1 @@
-CREATE TABLE sys_role(
- id serial NOT NULL,
- role character varying(255) NOT NULL,
- active boolean,
- CONSTRAINT pk_sys_role PRIMARY KEY (id)
-);
+ALTER TABLE sys_role ADD COLUMN active boolean;

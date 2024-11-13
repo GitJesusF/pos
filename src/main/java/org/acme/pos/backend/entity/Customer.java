@@ -31,7 +31,4 @@ public class Customer {
   //Para usar una propiedad que no esta relacionado al campo de una tabla
   @Transient
   private String noUsage;
-
-
-
 }

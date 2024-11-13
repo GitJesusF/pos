@@ -25,4 +25,6 @@ public interface CustomerService {
 
   // Count total Customers
   long getCustomerCount();
+
+  List<Customer> findByFilter(String sSearchTerm);
 }

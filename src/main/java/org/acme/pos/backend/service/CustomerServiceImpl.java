@@ -48,4 +48,9 @@ public class CustomerServiceImpl implements CustomerService{
   public long getCustomerCount() {
     return customerRepository.count();
   }
+
+  @Override
+  public List<Customer> findByFilter(String sSearchTerm) {
+    return customerRepository.findByFilter(sSearchTerm);
+  }
 }

@@ -45,8 +45,8 @@ public class CustomerList extends Div{
     txtSearchField.setPlaceholder("Search");
     txtSearchField.setClearButtonVisible(true);
     txtSearchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
-    txtSearchField.setValueChangeMode(ValueChangeMode.EAGER);
-    txtSearchField.addValueChangeListener(e -> filterCustomers());
+    txtSearchField.setValueChangeMode(ValueChangeMode.ON_CHANGE);
+    txtSearchField.addValueChangeListener(e -> refresh());
 
     //Botón de agregación
     btnInsert = new Button(VaadinIcon.PLUS.create());
@@ -80,29 +80,30 @@ public class CustomerList extends Div{
     super.onDetach(detachEvent);
   }
 
-  private void filterCustomers() {
-
+  private void refresh() {
     //trim() ignora los espacios en blanco en la busqueda
     //stream() manipula
+    String sSearchTerm = txtSearchField.getValue().trim().toLowerCase();
 
-    String searchTerm = txtSearchField.getValue().trim().toLowerCase();
-
-    List<Customer> allCustomers = customerService.getAllCustomers();
-
-    if (searchTerm.isEmpty()) {
-      grid.setItems(allCustomers);
+    if (sSearchTerm.isEmpty()) {
+      grid.setItems(customerService.getAllCustomers());
     } else {
-      grid.setItems(allCustomers.stream()
-          .filter(customer -> matchesTerm(
-              customer.getFirstName(), searchTerm) ||
-              matchesTerm(customer.getLastName(), searchTerm) ||
-              matchesTerm(customer.getEmail(), searchTerm) ||
-              matchesTerm(customer.getPhone(), searchTerm))
-          .toList());
+//      // filtrar solamente con los registros obtenidos de la base de datos
+//      grid.setItems(allCustomers.stream()
+//          .filter(customer -> matchesTerm(
+//              customer.getFirstName(), sSearchTerm) ||
+//              matchesTerm(customer.getLastName(), sSearchTerm) ||
+//              matchesTerm(customer.getEmail(), sSearchTerm) ||
+//              matchesTerm(customer.getPhone(), sSearchTerm))
+//          .toList());
+
+      // filtrar los registros en la base de datos
+      List<Customer> items = customerService.findByFilter(sSearchTerm);
+      grid.setItems(items);
     }
   }
 
-  private boolean matchesTerm(String value, String searchTerm) {
-    return value != null && value.toLowerCase().contains(searchTerm);
+  private boolean matchesTerm(String value, String sSearchTerm) {
+    return value != null && value.toLowerCase().contains(sSearchTerm);
   }
 }
