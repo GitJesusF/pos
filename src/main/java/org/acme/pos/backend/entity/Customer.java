@@ -25,7 +25,13 @@ public class Customer {
 
   private String phone;
 
+  @Column(nullable = false)
+  private String email;
+
   //Para usar una propiedad que no esta relacionado al campo de una tabla
   @Transient
   private String noUsage;
+
+
+
 }

@@ -1,0 +1,3 @@
+ALTER TABLE sys_user
+ALTER COLUMN email DROP NOT NULL;
+

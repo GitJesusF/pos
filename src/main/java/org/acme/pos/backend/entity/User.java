@@ -29,7 +29,15 @@ public class User {
   @Column(nullable = false)
   private String password;
 
+  @Column( nullable = false)
+  private String email;
+
   private Boolean active;
+
+
+  @ManyToOne
+  @JoinColumn(name = "role_id", referencedColumnName = "id")
+  private Role role;
 
   public boolean isActive(){
     return active!=null?active:false;
