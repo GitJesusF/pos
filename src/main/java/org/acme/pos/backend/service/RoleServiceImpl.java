@@ -43,4 +43,9 @@ public class RoleServiceImpl implements RoleService{
   public long getRoleCount() {
     return roleRepository.count();
   }
+
+  @Override
+  public List<Role> findByFilter(String sSearchTerm) {
+    return roleRepository.findByFilter(sSearchTerm);
+  }
 }

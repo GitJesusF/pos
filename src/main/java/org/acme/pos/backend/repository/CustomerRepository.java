@@ -11,8 +11,10 @@ import java.util.List;
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
   // List<Customer> findByFirstNameOrLastName(String sSearchTerm1, String sSearchTerm2);
-
-  @Query("SELECT c FROM Customer c WHERE LOWER(c.firstName) LIKE %?1% OR LOWER(c.lastName) LIKE %?1% " +
-    "OR LOWER(c.phone) LIKE %?1% OR LOWER(c.email) LIKE %?1%")
+  @Query("SELECT c FROM Customer c " +
+      "WHERE LOWER(c.firstName) LIKE %?1% " +
+      "OR LOWER(c.lastName) LIKE %?1% " +
+      "OR LOWER(c.phone) LIKE %?1% " +
+      "OR LOWER(c.email) LIKE %?1% ")
   List<Customer> findByFilter(String sSearchTerm);
 }

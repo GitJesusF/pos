@@ -48,4 +48,9 @@ public class UserServiceImpl implements UserService{
   public long getUserCount() {
     return userRepository.count();
   }
+
+  @Override
+  public List<User> findByFilter(String sSearchTerm) {
+    return userRepository.findByFilter(sSearchTerm);
+  }
 }

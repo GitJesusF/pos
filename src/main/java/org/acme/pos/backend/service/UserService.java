@@ -25,4 +25,6 @@ public interface UserService {
 
   // Count total Users
   long getUserCount();
+
+  List<User> findByFilter(String sSearchTerm);
 }

@@ -46,7 +46,7 @@ public class ItemList extends Div{
     txtSearchField.setClearButtonVisible(true);
     txtSearchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
     txtSearchField.setValueChangeMode(ValueChangeMode.EAGER);
-    txtSearchField.addValueChangeListener(e -> filterItems());
+    txtSearchField.addValueChangeListener(e -> refresh());
 
     //Botón de agregación
     btnInsert = new Button(VaadinIcon.PLUS.create());
@@ -80,28 +80,25 @@ public class ItemList extends Div{
     super.onDetach(detachEvent);
   }
 
-  private void filterItems() {
-
+  private void refresh() {
     //trim() ignora los espacios en blanco en la busqueda
     //stream() manipula
+    String sSearchTerm = txtSearchField.getValue().trim().toLowerCase();
 
-    String searchTerm = txtSearchField.getValue().trim().toLowerCase();
-
-    List<Item> allItems = itemService.getAllItems();
-
-    if (searchTerm.isEmpty()) {
-      grid.setItems(allItems);
+    if (sSearchTerm.isEmpty()) {
+      grid.setItems(itemService.getAllItems());
     } else {
-      grid.setItems(allItems.stream()
-          .filter(Item -> matchesTerm(
-              Item.getCode(), searchTerm) ||
-              matchesTerm(Item.getName(), searchTerm) ||
-              matchesTerm(Item.getPrice().toString(), searchTerm))
-          .toList());
-    }
-  }
+//      // filtrar solamente con los registros obtenidos de la base de datos
+//        grid.setItems(allItems.stream()
+//            .filter(Item -> matchesTerm(
+//                Item.getCode(), searchTerm) ||
+//                matchesTerm(Item.getName(), searchTerm) ||
+//                matchesTerm(Item.getPrice().toString(), searchTerm))
+//            .toList());
 
-  private boolean matchesTerm(String value, String searchTerm) {
-    return value != null && value.toLowerCase().contains(searchTerm);
+      // filtrar los registros en la base de datos
+      List<Item> items = itemService.findByFilter(sSearchTerm);
+      grid.setItems(items);
+    }
   }
 }

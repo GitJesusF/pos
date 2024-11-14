@@ -7,9 +7,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -27,7 +25,7 @@ import org.acme.pos.backend.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("role")
-public class RoleForm extends Div implements HasUrlParameter<Integer> {
+public class RoleForm extends VerticalLayout implements HasUrlParameter<Integer> {
 
   private Role data;
   private final Binder<Role> binder = new Binder<>(Role.class);
@@ -42,55 +40,13 @@ public class RoleForm extends Div implements HasUrlParameter<Integer> {
 
   public RoleForm() {
 
-    // Componentes
-    txtRole = new TextField("Rol");
-    txtRole.setRequiredIndicatorVisible(true);
+    HorizontalLayout header = doCreateHeader();
+    FormLayout form = doCreateForm();
+    HorizontalLayout layAction = doCreateActionButtons();
 
-    doCreateActionButtons();
-    doCreateDialog();
-
-    // Encabezado y diseño
-    HorizontalLayout header = new HorizontalLayout();
-    header.setId("header");
-    header.getThemeList().set("dark", true);
-    header.setWidthFull();
-    header.setSpacing(false);
-    header.addClassName("items-center");
-    header.add(new DrawerToggle());
-    H1 viewTitle = new H1("Sección de roles");
-    header.add(viewTitle);
-
-
-    // Contenedor del formulario
-    FormLayout formLayout = new FormLayout();
-    formLayout.add(txtRole);
-
-    formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
-    formLayout.addClassName("p-m");
-
-    // Contenedor de eliminar
-    HorizontalLayout leftButtonsLayout = new HorizontalLayout(btnDelete);
-    leftButtonsLayout.addClassName("content-center");
-    leftButtonsLayout.setWidthFull();
-
-    // Contenedor de botones
-    HorizontalLayout rightButtonsLayout = new HorizontalLayout(btnCancel, btnConfirm);
-    rightButtonsLayout.addClassName("content-end");
-    rightButtonsLayout.setSpacing(true);
-
-    // Contenedor de botones
-    HorizontalLayout buttonLayout = new HorizontalLayout();
-    buttonLayout.add(leftButtonsLayout, new Span(), rightButtonsLayout);
-    buttonLayout.setWidthFull();
-    buttonLayout.setPadding(true);
-    buttonLayout.addClassNames("items-center");
-
-    // Centrado para contenedor
-    VerticalLayout formContainer = new VerticalLayout(formLayout, buttonLayout);
-    buttonLayout.setPadding(true);
-    formContainer.addClassName("content-start");
-    formContainer.addClassName("items-center");
-    add(header, formContainer);
+    this.add(header, form, layAction);
+    this.addClassName("content-start");
+    this.addClassName("items-center");
   }
 
 
@@ -101,43 +57,52 @@ public class RoleForm extends Div implements HasUrlParameter<Integer> {
     // Formulario y validación con Binder
     binder.forField(txtRole)
         .asRequired("El rol es obligatorio")
-        .bind(Role::getRole, Role::setRole);
+        .bind(Role::getName, Role::setName);
 
     binder.readBean(data);
 
     txtRole.focus();
   }
 
-  private void doCreateActionButtons() {
-    // Botones
-    btnCancel = new Button("Cancelar");
-    btnConfirm = new Button("Aceptar");
-    btnDelete = new Button(new Icon(VaadinIcon.TRASH));
-
-    btnConfirm.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-    btnConfirm.addFocusShortcut(Key.ENTER).listenOn(txtRole);
-
-    btnDelete.addClassNames("bg-error", "text-error-contrast");
+  private HorizontalLayout doCreateHeader(){
+    // Encabezado y diseño
+    HorizontalLayout header = new HorizontalLayout();
+    header.setId("header");
+    header.getThemeList().set("dark", true);
+    header.setWidthFull();
+    header.setSpacing(false);
+    header.addClassName("items-center");
+    header.add(new DrawerToggle());
+    H1 viewTitle = new H1("Sección de roles");
+    header.add(viewTitle);
+    return header;
   }
 
-  private void  doCreateDialog(){
-    // Dialogo de eliminación
-    ConfirmDialog dialog = new ConfirmDialog();
-    dialog.setHeader("¿Está muy seguro de eliminar este rol?");
-    dialog.setText("Una vez eliminado, no se podrá recuperar la información.");
-    dialog.setCancelText("No");
-    dialog.setCancelable(true);
-    dialog.setConfirmText("Sí");
-    dialog.setConfirmButtonTheme("error primary");
-    dialog.addConfirmListener(event -> {
-      roleService.deleteRoleById(data.getId());
-      event.getSource().getUI().ifPresent(ui -> ui.navigate(RoleList.class));
+  private FormLayout doCreateForm() {
+    // Componentes
+    txtRole = new TextField("Rol");
+    txtRole.setRequiredIndicatorVisible(true);
 
-    });
 
-    btnCancel.addClickListener(event -> {
-      event.getSource().getUI().ifPresent(ui -> ui.navigate(RoleList.class));
-    });
+    // Contenedor del formulario
+    FormLayout formLayout = new FormLayout();
+    formLayout.add(txtRole);
+
+    formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
+    formLayout.addClassName("p-m");
+    return formLayout;
+  }
+
+
+  private HorizontalLayout doCreateActionButtons(){
+    // Botones
+    btnCancel = new Button("Cancelar");
+    btnCancel.addClickListener(event ->
+        event.getSource().getUI().ifPresent(ui -> ui.navigate(CustomerList.class)));
+
+    btnConfirm = new Button("Aceptar");
+    btnConfirm.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    btnConfirm.addFocusShortcut(Key.ENTER).listenOn(txtRole);
     btnConfirm.addClickListener(event -> {
       // This makes all current validation errors visible.
       BinderValidationStatus<Role> status = binder.validate();
@@ -149,14 +114,38 @@ public class RoleForm extends Div implements HasUrlParameter<Integer> {
       try {
         binder.writeBean(data);
         roleService.saveRole(data);
-        event.getSource().getUI().ifPresent(ui -> ui.navigate(RoleList.class));
+        event.getSource().getUI().ifPresent(ui -> ui.navigate(CustomerList.class));
       } catch (ValidationException e) {
         e.printStackTrace();
       }
     });
 
-    btnDelete.addClickListener(event -> {
-      dialog.open();
+    btnDelete = new Button(new Icon(VaadinIcon.TRASH));
+    btnDelete.addClassNames("bg-error", "text-error-contrast","mr-auto");
+    btnDelete.addClickListener(event -> openConfirmDeleteDialog());
+
+    // Contenedor de eliminar
+    HorizontalLayout layAction = new HorizontalLayout(btnDelete, btnCancel, btnConfirm);
+    layAction.setWidthFull();
+    layAction.addClassName("justify-end");
+    layAction.setPadding(true);
+
+    return layAction;
+  }
+
+
+  private void openConfirmDeleteDialog() {
+    // Dialogo de eliminación
+    ConfirmDialog dialog = new ConfirmDialog();
+    dialog.setHeader("¿Está muy seguro de eliminar este rol?");
+    dialog.setText("Una vez eliminado, no se podrá recuperar la información.");
+    dialog.setCancelText("No");
+    dialog.setCancelable(true);
+    dialog.setConfirmText("Sí");
+    dialog.setConfirmButtonTheme("error primary");
+    dialog.addConfirmListener(event -> {
+      roleService.deleteRoleById(data.getId());
+      event.getSource().getUI().ifPresent(ui -> ui.navigate(ItemList.class));
     });
   }
 
@@ -172,5 +161,4 @@ public class RoleForm extends Div implements HasUrlParameter<Integer> {
       btnDelete.setVisible(false);
     }
   }
-
 }

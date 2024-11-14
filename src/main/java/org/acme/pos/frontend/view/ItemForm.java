@@ -7,9 +7,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -28,7 +26,7 @@ import org.acme.pos.backend.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("item")
-public class ItemForm extends Div implements HasUrlParameter<Integer> {
+public class ItemForm extends VerticalLayout implements HasUrlParameter<Integer> {
 
   private Item data;
   private final Binder<Item> binder = new Binder<>(Item.class);
@@ -45,51 +43,13 @@ public class ItemForm extends Div implements HasUrlParameter<Integer> {
 
   public ItemForm() {
 
-    doCreateComponents();
-    doCreateActionButtons();
-    doCreateDialog();
+    HorizontalLayout header = doCreateHeader();
+    FormLayout form = doCreateForm();
+    HorizontalLayout layAction = doCreateActionButtons();
 
-    // Encabezado y diseño
-    HorizontalLayout header = new HorizontalLayout();
-    header.setId("header");
-    header.getThemeList().set("dark", true);
-    header.setWidthFull();
-    header.setSpacing(false);
-    header.addClassName("items-center");
-    header.add(new DrawerToggle());
-    H1 viewTitle = new H1("Sección de clientes");
-    header.add(viewTitle);
-
-    // Contenedor del formulario
-    FormLayout formLayout = new FormLayout();
-    formLayout.add(txtCode, txtName, txtPrice);
-
-    formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
-    formLayout.addClassName("p-m");
-
-    // Contenedor de eliminar
-    HorizontalLayout leftButtonsLayout = new HorizontalLayout(btnDelete);
-    leftButtonsLayout.addClassName("content-center");
-    leftButtonsLayout.setWidthFull();
-
-    // Contenedor de botones
-    HorizontalLayout rightButtonsLayout = new HorizontalLayout(btnCancel, btnConfirm);
-    rightButtonsLayout.addClassName("content-end");
-    rightButtonsLayout.setSpacing(true);
-
-    // Contenedor de botones
-    HorizontalLayout buttonLayout = new HorizontalLayout();
-    buttonLayout.add(leftButtonsLayout, new Span(), rightButtonsLayout);
-    buttonLayout.setWidthFull();
-    buttonLayout.setPadding(true);
-    buttonLayout.addClassNames("items-center");
-
-    // Centrado para contenedor
-    VerticalLayout formContainer = new VerticalLayout(formLayout, buttonLayout);
-    buttonLayout.setPadding(true);
-    formContainer.addClassName("content-start");
-    formContainer.addClassName("items-center");
-    add(header, formContainer);
+    this.add(header, form, layAction);
+    this.addClassName("content-start");
+    this.addClassName("items-center");
   }
 
   @Override
@@ -114,7 +74,21 @@ public class ItemForm extends Div implements HasUrlParameter<Integer> {
     txtCode.focus();
   }
 
-  private void doCreateComponents() {
+  private HorizontalLayout doCreateHeader(){
+    // Encabezado
+    HorizontalLayout header = new HorizontalLayout();
+    header.setId("header");
+    header.getThemeList().set("dark", true);
+    header.setWidthFull();
+    header.setSpacing(false);
+    header.addClassName("items-center");
+    header.add(new DrawerToggle());
+    H1 viewTitle = new H1("Sección de items");
+    header.add(viewTitle);
+    return header;
+  }
+
+  private FormLayout doCreateForm() {
     // Componentes
     txtCode = new TextField("Código");
     txtName = new TextField("Nombre");
@@ -127,40 +101,30 @@ public class ItemForm extends Div implements HasUrlParameter<Integer> {
 
     txtPrice.setRequiredIndicatorVisible(true);
     txtPrice.addFocusShortcut(Key.ENTER).listenOn(txtName);
+
+
+    // Contenedor del formulario
+    FormLayout formLayout = new FormLayout();
+    formLayout.add(txtCode, txtName, txtPrice);
+    formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
+    formLayout.addClassName("p-m");
+    formLayout.add(txtCode, txtName, txtPrice);
+
+    return formLayout;
   }
 
-
-  private void doCreateActionButtons() {
+  private HorizontalLayout doCreateActionButtons(){
     // Botones
-    btnCancel = new Button("Cancelar");
-    btnConfirm = new Button("Aceptar");
-    btnDelete = new Button(new Icon(VaadinIcon.TRASH));
 
+    btnDelete = new Button(new Icon(VaadinIcon.TRASH));
+    btnDelete.addClassNames("bg-error", "text-error-contrast");
+    btnDelete.addClickListener(event -> openConfirmDeleteDialog());
+
+    btnCancel = new Button("Cancelar");
+
+    btnConfirm = new Button("Aceptar");
     btnConfirm.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
     btnConfirm.addFocusShortcut(Key.ENTER).listenOn(txtPrice);
-
-    btnDelete.addClassNames("bg-error", "text-error-contrast");
-  }
-
-  private void doCreateDialog() {
-
-    // Dialogo de eliminación
-    ConfirmDialog dialog = new ConfirmDialog();
-    dialog.setHeader("¿Está muy seguro de eliminar este cliente?");
-    dialog.setText("Una vez eliminado, no se podrá recuperar la información.");
-    dialog.setCancelText("No");
-    dialog.setCancelable(true);
-    dialog.setConfirmText("Sí");
-    dialog.setConfirmButtonTheme("error primary");
-    dialog.addConfirmListener(event -> {
-      itemService.deleteItemById(data.getId());
-      event.getSource().getUI().ifPresent(ui -> ui.navigate(ItemList.class));
-
-    });
-
-    btnCancel.addClickListener(event -> {
-      event.getSource().getUI().ifPresent(ui -> ui.navigate(ItemList.class));
-    });
     btnConfirm.addClickListener(event -> {
       // This makes all current validation errors visible.
       BinderValidationStatus<Item> status = binder.validate();
@@ -172,17 +136,39 @@ public class ItemForm extends Div implements HasUrlParameter<Integer> {
       try {
         binder.writeBean(data);
         itemService.saveItem(data);
-        event.getSource().getUI().ifPresent(ui -> ui.navigate(ItemList.class));
+        event.getSource().getUI().ifPresent(ui -> ui.navigate(CustomerList.class));
       } catch (ValidationException e) {
         e.printStackTrace();
       }
     });
 
+    btnDelete = new Button(new Icon(VaadinIcon.TRASH));
+    btnDelete.addClassNames("bg-error", "text-error-contrast","mr-auto");
+    btnDelete.addClickListener(event -> openConfirmDeleteDialog());
 
-    btnDelete.addClickListener(event -> {
-      dialog.open();
+    // Contenedor de eliminar
+    HorizontalLayout layAction = new HorizontalLayout(btnDelete, btnCancel, btnConfirm);
+    layAction.setWidthFull();
+    layAction.addClassName("justify-end");
+    layAction.setPadding(true);
+
+    return layAction;
+  }
+
+
+  private void openConfirmDeleteDialog() {
+    // Dialogo de eliminación
+    ConfirmDialog dialog = new ConfirmDialog();
+    dialog.setHeader("¿Está muy seguro de eliminar este item?");
+    dialog.setText("Una vez eliminado, no se podrá recuperar la información.");
+    dialog.setCancelText("No");
+    dialog.setCancelable(true);
+    dialog.setConfirmText("Sí");
+    dialog.setConfirmButtonTheme("error primary");
+    dialog.addConfirmListener(event -> {
+      itemService.deleteItemById(data.getId());
+      event.getSource().getUI().ifPresent(ui -> ui.navigate(ItemList.class));
     });
-
   }
 
   @Override

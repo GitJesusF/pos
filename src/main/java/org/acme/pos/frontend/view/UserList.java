@@ -39,9 +39,7 @@ public class UserList extends Div{
     grid.addColumn(User::getFirstName).setHeader("Nombre").setSortable(true).setFlexGrow(1);
     grid.addColumn(User::getLastName).setHeader("Apellido").setSortable(true).setFlexGrow(1);
     grid.addColumn(User::getUsername).setHeader("Usuario").setFlexGrow(1);
-
-    grid.addColumn(user -> user.getRole() != null ? user.getRole().getRole() : "Sin rol").setHeader("Rol").setSortable(true).setFlexGrow(1);
-
+    grid.addColumn(user -> user.getRole() != null ? user.getRole().getName() : "Sin rol").setHeader("Rol").setSortable(true).setFlexGrow(1);
     grid.addColumn(User::getEmail).setHeader("Email").setFlexGrow(1).setAutoWidth(true);
 
     // Configuración de busqueda
@@ -49,8 +47,8 @@ public class UserList extends Div{
     txtSearchField.setPlaceholder("Search");
     txtSearchField.setClearButtonVisible(true);
     txtSearchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
-    txtSearchField.setValueChangeMode(ValueChangeMode.EAGER);
-    txtSearchField.addValueChangeListener(e -> filterUsers());
+    txtSearchField.setValueChangeMode(ValueChangeMode.ON_CHANGE);
+    txtSearchField.addValueChangeListener(e -> refresh());
 
     //Botón de agregación
     btnInsert = new Button(VaadinIcon.PLUS.create());
@@ -84,30 +82,27 @@ public class UserList extends Div{
     super.onDetach(detachEvent);
   }
 
-  private void filterUsers() {
-
+  private void refresh() {
     //trim() ignora los espacios en blanco en la busqueda
     //stream() manipula
+    String sSearchTerm = txtSearchField.getValue().trim().toLowerCase();
 
-    String searchTerm = txtSearchField.getValue().trim().toLowerCase();
-
-    List<User> allUsers = userService.getAllUsers();
-
-    if (searchTerm.isEmpty()) {
-      grid.setItems(allUsers);
+    if (sSearchTerm.isEmpty()) {
+      grid.setItems(userService.getAllUsers());
     } else {
-      grid.setItems(allUsers.stream()
-          .filter(user -> matchesTerm(
-              user.getFirstName(), searchTerm) ||
-              matchesTerm(user.getLastName(), searchTerm) ||
-              matchesTerm(user.getUsername(), searchTerm) ||
-              matchesTerm(user.getRole().getRole(), searchTerm) ||
-              matchesTerm(user.getEmail(), searchTerm))
-          .toList());
-    }
-  }
+//      // filtrar solamente con los registros obtenidos de la base de datos
+//      grid.setItems(allUsers.stream()
+//          .filter(user -> matchesTerm(
+//              user.getFirstName(), searchTerm) ||
+//              matchesTerm(user.getLastName(), searchTerm) ||
+//              matchesTerm(user.getUsername(), searchTerm) ||
+//              matchesTerm(user.getRole().getRole(), searchTerm) ||
+//              matchesTerm(user.getEmail(), searchTerm))
+//          .toList());
 
-  private boolean matchesTerm(String value, String searchTerm) {
-    return value != null && value.toLowerCase().contains(searchTerm);
+      // filtrar los registros en la base de datos
+      List<User> items = userService.findByFilter(sSearchTerm);
+      grid.setItems(items);
+    }
   }
 }

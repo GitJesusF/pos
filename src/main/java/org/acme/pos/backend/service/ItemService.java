@@ -25,4 +25,7 @@ public interface ItemService {
 
   // Count total Items
   long getItemCount();
+
+  List<Item> findByFilter(String sSearchTerm);
+
 }

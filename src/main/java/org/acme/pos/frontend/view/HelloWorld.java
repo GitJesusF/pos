@@ -14,7 +14,7 @@ public class HelloWorld extends Div {
 
 
     Button btnSayHello = new Button("Say hello");
-    btnSayHello.addClickListener(event -> Notification.show("Hello" + txtName.getValue()));
+    btnSayHello.addClickListener(event -> Notification.show("Hello " + txtName.getValue()));
 
     this.add(txtName, btnSayHello);
 

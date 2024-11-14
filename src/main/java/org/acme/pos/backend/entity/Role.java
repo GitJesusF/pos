@@ -18,7 +18,7 @@ public class Role {
   private Integer id;
 
   @Column(nullable = false)
-  private String role;
+  private String name;
 
   private Boolean active;
 

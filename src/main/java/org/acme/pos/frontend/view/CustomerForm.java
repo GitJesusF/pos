@@ -7,10 +7,9 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -40,11 +39,12 @@ public class CustomerForm extends VerticalLayout implements HasUrlParameter<Inte
   private Button btnCancel;
   private Button btnConfirm;
 
-
   @Autowired
   private CustomerService customerService;
 
+  //Constructor
   public CustomerForm() {
+
     HorizontalLayout header = doCreateHeader();
     FormLayout form = doCreateForm();
     HorizontalLayout layAction = doCreateActionButtons();
@@ -53,20 +53,6 @@ public class CustomerForm extends VerticalLayout implements HasUrlParameter<Inte
     this.add(header, form, layAction);
     this.addClassName("content-start");
     this.addClassName("items-center");
-  }
-
-  private HorizontalLayout doCreateHeader() {
-    // Encabezado y diseño
-    HorizontalLayout header = new HorizontalLayout();
-    header.setId("header");
-    header.getThemeList().set("dark", true);
-    header.setWidthFull();
-    header.setSpacing(false);
-    header.addClassName("items-center");
-    header.add(new DrawerToggle());
-    H1 viewTitle = new H1("Sección de clientes");
-    header.add(viewTitle);
-    return header;
   }
 
   @Override
@@ -97,6 +83,20 @@ public class CustomerForm extends VerticalLayout implements HasUrlParameter<Inte
     txtFirstName.focus();
   }
 
+  private HorizontalLayout doCreateHeader() {
+    // Encabezado
+    HorizontalLayout header = new HorizontalLayout();
+    header.setId("header");
+    header.getThemeList().set("dark", true);
+    header.setWidthFull();
+    header.setSpacing(false);
+    header.addClassName("items-center");
+    header.add(new DrawerToggle());
+    H1 viewTitle = new H1("Sección de clientes");
+    header.add(viewTitle);
+    return header;
+  }
+
   private FormLayout doCreateForm(){
 
     // Componentes
@@ -122,7 +122,7 @@ public class CustomerForm extends VerticalLayout implements HasUrlParameter<Inte
     txtPhone.setRequiredIndicatorVisible(true);
     txtPhone.addFocusShortcut(Key.ENTER).listenOn(txtEmail);
 
-    // Contenedor del formulario
+    // Diseño de formulario
     FormLayout formLayout = new FormLayout();
     formLayout.setColspan(txtEmail, 2);
     formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
@@ -159,14 +159,10 @@ public class CustomerForm extends VerticalLayout implements HasUrlParameter<Inte
     });
 
     btnDelete = new Button(new Icon(VaadinIcon.TRASH));
-    btnDelete.addClassNames("bg-error", "text-error-contrast","mr-auto");
-    btnDelete.addClickListener(event -> {
-      openConfirmDeleteDialog();
-    } );
+    btnDelete.addClassNames("bg-error", "text-error-contrast", "mr-auto");
+    btnDelete.addClickListener(event -> openConfirmDeleteDialog());
 
-
-
-    // Contenedor de eliminar
+    //Diseño del contenedor de botones
     HorizontalLayout layAction = new HorizontalLayout(btnDelete, btnCancel, btnConfirm);
     layAction.setWidthFull();
     layAction.addClassName("justify-end");

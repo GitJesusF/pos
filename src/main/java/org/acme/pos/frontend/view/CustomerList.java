@@ -102,8 +102,4 @@ public class CustomerList extends Div{
       grid.setItems(items);
     }
   }
-
-  private boolean matchesTerm(String value, String sSearchTerm) {
-    return value != null && value.toLowerCase().contains(sSearchTerm);
-  }
 }

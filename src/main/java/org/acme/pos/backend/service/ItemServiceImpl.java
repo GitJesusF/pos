@@ -48,4 +48,9 @@ public class ItemServiceImpl implements ItemService{
   public long getItemCount() {
     return itemRepository.count();
   }
+
+  @Override
+  public List<Item> findByFilter(String sSearchTerm) {
+    return itemRepository.findByFilter(sSearchTerm);
+  }
 }

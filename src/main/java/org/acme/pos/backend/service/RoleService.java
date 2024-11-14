@@ -25,4 +25,6 @@ public interface RoleService {
 
   // Count total Roles
   long getRoleCount();
+
+  List<Role> findByFilter(String sSearchTerm);
 }

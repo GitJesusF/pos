@@ -36,7 +36,7 @@ public class RoleList extends Div{
       event.getSource().getUI().ifPresent(ui -> ui.navigate(RoleForm.class, event.getItem().getId()));
       //Notification.show(event.getItem().getId().toString());
     });
-    grid.addColumn(Role::getRole).setHeader("Rol").setSortable(true).setFlexGrow(1);
+    grid.addColumn(Role::getName).setHeader("Rol").setSortable(true).setFlexGrow(1);
 
 
     // Configuración de busqueda
@@ -45,7 +45,7 @@ public class RoleList extends Div{
     txtSearchField.setClearButtonVisible(true);
     txtSearchField.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
     txtSearchField.setValueChangeMode(ValueChangeMode.EAGER);
-    txtSearchField.addValueChangeListener(e -> filterRoles());
+    txtSearchField.addValueChangeListener(e -> refresh());
 
     //Botón de agregación
     btnInsert = new Button(VaadinIcon.PLUS.create());
@@ -79,25 +79,23 @@ public class RoleList extends Div{
     super.onDetach(detachEvent);
   }
 
-  private void filterRoles() {
-
+  private void refresh() {
     //trim() ignora los espacios en blanco en la busqueda
     //stream() manipula
 
-    String searchTerm = txtSearchField.getValue().trim().toLowerCase();
+    String sSearchTerm = txtSearchField.getValue().trim().toLowerCase();
 
     List<Role> allRoles = roleService.getAllRoles();
-    if (searchTerm.isEmpty()) {
-      grid.setItems(allRoles);
+    if (sSearchTerm.isEmpty()) {
+      grid.setItems(roleService.getAllRoles());
     } else {
-      grid.setItems(allRoles.stream()
-          .filter(Role -> matchesTerm(
-              Role.getRole(), searchTerm))
-          .toList());
+//      grid.setItems(allRoles.stream()
+//          .filter(Role -> matchesTerm(
+//              Role.getName(), searchTerm))
+//          .toList());
+      // filtrar los registros en la base de datos
+      List<Role> items = roleService.findByFilter(sSearchTerm);
+      grid.setItems(items);
     }
-  }
-
-  private boolean matchesTerm(String value, String searchTerm) {
-    return value != null && value.toLowerCase().contains(searchTerm);
   }
 }
