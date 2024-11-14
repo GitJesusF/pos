@@ -3,6 +3,10 @@ package org.acme.pos.backend.service;
 import org.acme.pos.backend.entity.Customer;
 import org.acme.pos.backend.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +31,8 @@ public class CustomerServiceImpl implements CustomerService{
 
   // Get all Customers
   @Override
-  public List<Customer> getAllCustomers() {
-    return customerRepository.findAll();
+  public Page<Customer> getAllCustomers(Pageable pageable) {
+    return customerRepository.findAll(pageable);
   }
 
   // Delete Customer by ID
@@ -50,7 +54,7 @@ public class CustomerServiceImpl implements CustomerService{
   }
 
   @Override
-  public List<Customer> findByFilter(String sSearchTerm) {
-    return customerRepository.findByFilter(sSearchTerm);
+  public List<Customer> findByFilter(String sSearchTerm, Sort sort) {
+    return customerRepository.findByFilter(sSearchTerm, sort);
   }
 }

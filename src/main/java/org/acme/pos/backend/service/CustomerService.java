@@ -1,6 +1,10 @@
 package org.acme.pos.backend.service;
 
 import org.acme.pos.backend.entity.Customer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,7 +19,7 @@ public interface CustomerService {
   Optional<Customer> getCustomerById(Integer id);
 
   // Get all Customers
-  List<Customer> getAllCustomers();
+  Page<Customer> getAllCustomers(Pageable pageable);
 
   // Delete Customer by ID
   void deleteCustomerById(Integer id);
@@ -26,5 +30,5 @@ public interface CustomerService {
   // Count total Customers
   long getCustomerCount();
 
-  List<Customer> findByFilter(String sSearchTerm);
+  List<Customer> findByFilter(String sSearchTerm, Sort sort);
 }
