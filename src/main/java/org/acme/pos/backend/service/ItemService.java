@@ -1,9 +1,10 @@
 package org.acme.pos.backend.service;
 
 import org.acme.pos.backend.entity.Item;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -15,7 +16,7 @@ public interface ItemService {
   Optional<Item> getItemById(Integer id);
 
   // Get all Items
-  List<Item> getAllItems();
+  Page<Item> getAllItems(Pageable pageable);
 
   // Delete Item by ID
   void deleteItemById(Integer id);
@@ -26,6 +27,6 @@ public interface ItemService {
   // Count total Items
   long getItemCount();
 
-  List<Item> findByFilter(String sSearchTerm);
+  Page<Item> findByFilter(String sSearchTerm, Pageable pageable);
 
 }

@@ -4,12 +4,9 @@ import org.acme.pos.backend.entity.Customer;
 import org.acme.pos.backend.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -54,7 +51,7 @@ public class CustomerServiceImpl implements CustomerService{
   }
 
   @Override
-  public List<Customer> findByFilter(String sSearchTerm, Sort sort) {
-    return customerRepository.findByFilter(sSearchTerm, sort);
+  public Page<Customer> findByFilter(String sSearchTerm, Pageable pageable) {
+    return customerRepository.findByFilter(sSearchTerm, pageable);
   }
 }

@@ -1,9 +1,10 @@
 package org.acme.pos.backend.service;
 
 import org.acme.pos.backend.entity.Role;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -15,7 +16,7 @@ public interface RoleService {
   Optional<Role> getRoleById(Integer id);
 
   // Get all Roles
-  List<Role> getAllRoles();
+  Page<Role> getAllRoles(Pageable pageable);
 
   // Delete Role by ID
   void deleteRoleById(Integer id);
@@ -26,5 +27,5 @@ public interface RoleService {
   // Count total Roles
   long getRoleCount();
 
-  List<Role> findByFilter(String sSearchTerm);
+  Page<Role> findByFilter(String sSearchTerm, Pageable pageable);
 }

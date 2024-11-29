@@ -74,6 +74,7 @@ public class UserForm extends VerticalLayout implements HasUrlParameter<Integer>
   protected void onAttach(AttachEvent attachEvent) {
     super.onAttach(attachEvent);
 
+
     // Formulario y validación con Binder
     binder.forField(txtFirstName)
         .asRequired("El nombre es obligatorio")
@@ -101,7 +102,7 @@ public class UserForm extends VerticalLayout implements HasUrlParameter<Integer>
         .bind(User::getPassword, User::setPassword);
 
     // load combobox items
-    cbxRoles.setItems(roleService.getAllRoles());
+    //cbxRoles.setItems(roleService.getAllRoles());
     cbxRoles.setItemLabelGenerator(Role::getName);
 
     binder.readBean(data);

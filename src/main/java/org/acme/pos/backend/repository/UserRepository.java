@@ -1,6 +1,9 @@
 package org.acme.pos.backend.repository;
 
+import org.acme.pos.backend.entity.Customer;
 import org.acme.pos.backend.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,5 +20,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
       "OR LOWER(u.username) LIKE %?1% " +
       "OR LOWER(u.email) LIKE %?1% " +
       "OR LOWER(r.name) LIKE %?1%")
-  List<User> findByFilter(String sSearchTerm);
+  Page<User> findByFilter(String sSearchTerm, Pageable sort);
 }

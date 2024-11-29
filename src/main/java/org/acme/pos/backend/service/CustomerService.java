@@ -2,12 +2,9 @@ package org.acme.pos.backend.service;
 
 import org.acme.pos.backend.entity.Customer;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -30,5 +27,5 @@ public interface CustomerService {
   // Count total Customers
   long getCustomerCount();
 
-  List<Customer> findByFilter(String sSearchTerm, Sort sort);
+  Page<Customer> findByFilter(String sSearchTerm, Pageable pageable);
 }

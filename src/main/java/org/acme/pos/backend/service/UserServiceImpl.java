@@ -1,8 +1,11 @@
 package org.acme.pos.backend.service;
 
+import org.acme.pos.backend.entity.Customer;
 import org.acme.pos.backend.entity.User;
 import org.acme.pos.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +30,8 @@ public class UserServiceImpl implements UserService{
 
   // Get all Users
   @Override
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
+  public Page<User> getAllUsers(Pageable pageable) {
+    return userRepository.findAll(pageable);
   }
 
   // Delete User by ID
@@ -50,7 +53,7 @@ public class UserServiceImpl implements UserService{
   }
 
   @Override
-  public List<User> findByFilter(String sSearchTerm) {
-    return userRepository.findByFilter(sSearchTerm);
+  public Page<User> findByFilter(String sSearchTerm, Pageable pageable) {
+    return userRepository.findByFilter(sSearchTerm, pageable);
   }
 }
